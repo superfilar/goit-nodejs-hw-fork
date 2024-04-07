@@ -15,7 +15,7 @@ const contactSchema = Joi.object({
     minDomainSegments: 2,
     tlds: { allow: ["com", "net"] },
   }),
-  phone: Joi.string().required(),
+  phone: Joi.string().min(7).max(19).required(),
 });
 
 const contactIdSchema = Joi.string()
@@ -59,9 +59,13 @@ router.post("/", async (req, res, next) => {
 
 router.delete("/:contactId", async (req, res, next) => {
   try {
-    const result = removeContact(req.params.contactId);
+    const { error: idError } = contactIdSchema.validate(req.params.contactId);
+    if (!idError) {
+      return res.status(400).json({ message: idError.details[0].message });
+    }
+    const result = await removeContact(req.params.contactId);
     if (result) {
-      res.status(200).json({ message: "contact deleted" });
+      res.status(200).json({ message: "Contact deleted" });
     } else {
       res.status(404).json({ message: "Not found" });
     }
@@ -72,12 +76,12 @@ router.delete("/:contactId", async (req, res, next) => {
 
 router.put("/:contactId", async (req, res, next) => {
   try {
-    const { error: idError } = req.params.contactId;
-    if (idError) {
+    const { error: idError } = contactIdSchema.validate(req.params.contactId);
+    if (!idError) {
       return res.status(400).json({ message: idError.details[0].message });
     }
 
-    const { error: bodyError } = req.body;
+    const { error: bodyError } = contactSchema.validate(req.body);
     if (bodyError) {
       return res.status(400).json({ message: bodyError.details[0].message });
     }

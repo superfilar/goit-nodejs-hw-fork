@@ -1,11 +1,11 @@
 const fs = require("fs/promises");
-const { nanoid } = "nanoid";
+const { nanoid } = require("nanoid");
 const dataFile = "models/contacts.json";
+const data = fs.readFile(dataFile, "utf8");
 
 const listContacts = async () => {
   try {
-    const data = await fs.readFile(dataFile, "utf8");
-    return JSON.parse(data);
+    return JSON.parse(await data);
   } catch (error) {
     console.error("Error reading contacts data:", error);
     return [];
@@ -14,8 +14,7 @@ const listContacts = async () => {
 
 const getContactById = async (contactId) => {
   try {
-    const data = await fs.readFile(dataFile, "utf8");
-    const contacts = JSON.parse(data);
+    const contacts = JSON.parse(await data);
     return contacts.find((contact) => contact.id === contactId);
   } catch (error) {
     console.error("Error finding contact by ID:", error);
@@ -25,8 +24,7 @@ const getContactById = async (contactId) => {
 
 const removeContact = async (contactId) => {
   try {
-    const data = await fs.readFile(dataFile, "utf8");
-    let contacts = JSON.parse(data);
+    let contacts = JSON.parse(await data);
     contacts = contacts.filter((contact) => contact.id !== contactId);
     await fs.writeFile(dataFile, JSON.stringify(contacts, null, 2));
     return contacts;
@@ -39,7 +37,7 @@ const removeContact = async (contactId) => {
 const addContact = async (body) => {
   try {
     const data = await listContacts();
-    const newContact = { id: String(Date.now()), ...body };
+    const newContact = { id: nanoid(), ...body };
     data.push(newContact);
     await fs.writeFile(dataFile, JSON.stringify(data, null, 2));
     return newContact;
