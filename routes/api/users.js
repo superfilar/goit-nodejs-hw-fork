@@ -28,10 +28,9 @@ router.post("/signup", async (req, res, next) => {
 
 router.post("/login", async (req, res, next) => {
   try {
-    const { error: error } = authSchema.validate(req.params.body);
-    if (!error) {
+    const { error } = authSchema.validate(req.body);
+    if (error)
       return res.status(400).json({ message: error.details[0].message });
-    }
     const result = await login(req.body);
     if (!result)
       return res.status(401).json({ message: "Email or password is wrong" });
