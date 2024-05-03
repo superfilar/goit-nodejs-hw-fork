@@ -7,8 +7,13 @@ const {
   login,
   logout,
   current,
+  confirmEmail,
+  confirmEmailSecondTime,
 } = require("../../models/users.js");
-const { authSchema } = require("../../middleware/validation.js");
+const {
+  authSchema,
+  secondTimeValidationShema,
+} = require("../../middleware/validation.js");
 const { uploadMiddleware, changeAvatar } = require("../../models/changeAvatar");
 
 router.post("/signup", async (req, res, next) => {
@@ -85,5 +90,26 @@ router.patch(
     }
   }
 );
+
+router.get("/verify/:verificationToken", async (req, res, next) => {
+  const { verificationToken } = req.params;
+  const result = await confirmEmail(verificationToken);
+  if (!result) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  res.status(200).json({ message: "Verification successful" });
+});
+
+router.post("/verify", async (req, res, next) => {
+  const { error } = secondTimeValidationShema.validate(req.body);
+  if (error)
+    return res.status(400).json({ message: "Missing required field email" });
+
+  const { email } = req.body;
+  const result = await confirmEmailSecondTime(email);
+  if (typeof result === "string")
+    return res.status(400).json({ message: result });
+  if (result) res.json({ message: "Verification email sent" });
+});
 
 module.exports = router;
