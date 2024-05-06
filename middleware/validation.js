@@ -36,6 +36,11 @@ const authSchema = Joi.object({
     .required(),
   password: Joi.string().required(),
   subscription: Joi.string().valid("starter", "pro", "business"),
+  token: Joi.string(),
+});
+
+const emailSchema = Joi.object({
+  email: Joi.string().email().required(),
 });
 
 module.exports = {
@@ -44,4 +49,5 @@ module.exports = {
   favoriteShemaUpdate,
   contactIdSchema,
   authSchema,
+  emailSchema,
 };
