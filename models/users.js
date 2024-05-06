@@ -96,7 +96,7 @@ const confirmEmail = async (verificationToken) => {
   }
 };
 
-const confirmEmailSecondTime = async (email, res) => {
+const sendEmail = async (email, res) => {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   try {
     const user = await User.findOne({ email });
@@ -125,5 +125,5 @@ module.exports = {
   logout,
   current,
   confirmEmail,
-  confirmEmailSecondTime,
+  sendEmail,
 };

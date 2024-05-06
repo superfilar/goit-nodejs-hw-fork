@@ -39,7 +39,7 @@ const authSchema = Joi.object({
   token: Joi.string(),
 });
 
-const secondTimeValidationShema = Joi.object({
+const emailSchema = Joi.object({
   email: Joi.string().email().required(),
 });
 
@@ -49,5 +49,5 @@ module.exports = {
   favoriteShemaUpdate,
   contactIdSchema,
   authSchema,
-  secondTimeValidationShema,
+  emailSchema,
 };
